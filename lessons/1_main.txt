@@ -114,3 +114,10 @@
             сообщений и возможность их повторного чтения
         - RabbitMQ поддерживает сложные паттерны маршрутизации сообщений, часто используется где на первый план выходит
             скорость доставки, но не требуется длительное хранение сообщений
+
+- Для дополнительного чтения:
+    - https://practicum.yandex.ru/blog/broker-soobsheniy-apache-kafka/
+    - https://zookeeper.apache.org/doc/r3.8.4/zookeeperOver.html
+    - https://developer.confluent.io/learn/kraft/
+    - https://yandex.cloud/ru/docs/message-queue/concepts/dlq
+    - https://docs.confluent.io/kafka/design/delivery-semantics.html
