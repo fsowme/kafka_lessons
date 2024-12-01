@@ -11,7 +11,7 @@ conf = {
 consumer = Consumer(conf)
 
 # Подписка на топик
-consumer.subscribe(["some-topic"])
+consumer.subscribe(["test1"])
 
 # Чтение сообщений в бесконечном цикле
 try:
