@@ -13,6 +13,7 @@ input_topic = app.topic("input-topic", value_type=str)
 # Определение топика для выходных данных
 output_topic = app.topic("output-topic", value_type=str)
 
+
 # Функция, реализующая потоковую обработку данных
 @app.agent(input_topic)
 async def process(stream):
