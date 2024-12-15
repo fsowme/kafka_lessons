@@ -98,9 +98,25 @@
     поступающих событий
 
 - Запрос на объединение потока и таблицы
-    CREATE STREAM final_stream AS           -- создание нового потока на основе объединения
-    SELECT us.id, us.value, ut.user_email   -- выбор полей для нового потока (часть из потока, часть и таблицы)
+    CREATE STREAM final_stream AS   -- создание нового потока на основе объединения
+    SELECT                          -- выбор полей для нового потока
+        us.id                       -- из потока
+        us.value,
+        ut.user_email               -- из таблицы
     FROM user_stream AS us
-    LEFT JOIN user_table AS ut              -- объединяем таблицу и поток
-    ON us.id = ut.user_id                   -- по id пользователя
-    EMIT CHANGES;                           -- обеспечение постоянное обновление потока
+    LEFT JOIN user_table AS ut      -- объединяем таблицу и поток
+    ON us.id = ut.user_id           -- по id пользователя
+    EMIT CHANGES;                   -- обеспечение постоянное обновление потока
+
+- Объединение потоков позволяет комбинировать данные из разных источников на основе общего ключа
+
+- Запрос на объединение потоков
+    CREATE joined_stream AS     -- создание нового потока на основе соединения
+    SELECT                      -- выбираем нужные поля
+        is1.id,                 -- из левого потока
+        is1.value AS value_1,
+        is2.value AS value_2    -- из правого
+    FROM input_stream_1 AS is1
+    JOIN input_stream_2 AS is2  -- объединение потоков
+    ON is1.id = is2.id          -- по общему ключу
+    EMIT CHANGES;
