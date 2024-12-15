@@ -111,12 +111,41 @@
 - Объединение потоков позволяет комбинировать данные из разных источников на основе общего ключа
 
 - Запрос на объединение потоков
-    CREATE joined_stream AS     -- создание нового потока на основе соединения
-    SELECT                      -- выбираем нужные поля
-        is1.id,                 -- из левого потока
+    CREATE STREAM joined_stream AS  -- создание нового потока на основе соединения
+    SELECT                          -- выбираем нужные поля
+        is1.id,                     -- из левого потока
         is1.value AS value_1,
-        is2.value AS value_2    -- из правого
+        is2.value AS value_2        -- из правого
     FROM input_stream_1 AS is1
-    JOIN input_stream_2 AS is2  -- объединение потоков
-    ON is1.id = is2.id          -- по общему ключу
+    JOIN input_stream_2 AS is2      -- объединение потоков
+    ON is1.id = is2.id              -- по общему ключу
     EMIT CHANGES;
+
+- Запрос на агрегирование данных
+    CREATE TABLE views_per_region AS    -- создание таблицы на основе агрегированных данных
+    SELECT                              -- выбираем и агрегируем данные
+        region_id,
+        count(*) AS count
+    FROM video_views
+    WINDOW TUMBLING (SIZE 1 HOUR)       -- определяем окна агрегирования в один час
+    GROUP BY region_id                  -- группируем по региону
+    EMIT CHANGES;                       -- обеспечиваем постоянное обновление таблицы
+
+- Запрос на фильтрацию данных
+    CREATE STREAM exceptions_stream AS  -- создание нового потока на основе другого
+    SELECT *                            -- выбор всех полей
+    FROM log_stream
+    WHERE value LIKE '%EXCEPTION%'      -- фильтрация данных
+    EMIT CHANGES;                       -- обеспечиваем постоянное обновление потока
+
+- Перепартиционирование данных (repartitioning) - позволяет оптимизировать распределение данных в кластере и в
+    результате повысить производительность и масштабируемость системы
+
+- Запрос на перепартиционирование
+    CREATE STREAM repartitioned_stream AS   -- создание нового потока с перепартиционирование
+    SELECT                                  -- выбор полей для нового потока
+        user_id,
+        amount
+    FROM transactions_stream
+    PARTITION BY user_id                    -- применение перепартиционирования по полю user_id
+    EMIT CHANGES;                           -- обеспечиваем постоянное обновление потока
