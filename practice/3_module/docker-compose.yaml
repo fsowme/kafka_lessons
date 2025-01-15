@@ -68,6 +68,41 @@ services:
     networks:
       - proxynet
 
+  kafka-connect:
+    build:
+      context: ./kafka-connect
+    ports:
+      - "8083:8083"
+      - "9875:9875"
+      - "9876:9876"
+    depends_on:
+      - kafka-0
+      - kafka-1
+      - kafka-2
+      - schema-registry
+      - postgres
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: kafka-0:9092
+      CONNECT_REST_PORT: 8083
+      CONNECT_GROUP_ID: 'kafka-connect'
+      CONNECT_REST_ADVERTISED_HOST_NAME: 'localhost'
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_CONFIG_STORAGE_TOPIC: 'connect-config-storage'
+      CONNECT_OFFSET_STORAGE_TOPIC: 'connect-offset-storage'
+      CONNECT_STATUS_STORAGE_TOPIC: 'connect-status-storage'
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8081/'
+      CONNECT_PLUGIN_PATH: /usr/share/java,/etc/kafka-connect/jars
+    volumes:
+      - ./confluent-hub-components/:/etc/kafka-connect/jars
+    networks:
+      - proxynet
+
   ui:
     image: provectuslabs/kafka-ui:v0.7.0
     restart: always
