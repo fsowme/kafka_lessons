@@ -1,6 +1,7 @@
 import uuid
 
 from confluent_kafka import Producer
+import time
 
 if __name__ == "__main__":
     producer_conf = {
@@ -29,3 +30,4 @@ if __name__ == "__main__":
         )
         producer.flush()
         print(f"Отправлено сообщение: {key=}, {value=}")
+        time.sleep(1)
